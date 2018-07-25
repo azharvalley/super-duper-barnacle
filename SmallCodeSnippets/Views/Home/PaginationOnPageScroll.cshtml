@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewBag.Title = "Pagination On PageScroll";
+}
+
+<h1>Pagination on Page Scroll</h1>
+<p>We are loading 9 products each time user scroll down</p>
+
+<div class="inner-page-layout">
+    <div class="contact-page-main">
+        <div class="container">
+            <div class="row">
+                <div class="row">
+                    <div class="col-sm-12 text-center"><img src="~/images/banner.png" /></div>
+                    <br />
+                    <div class="col-sm-12">
+                        <div class="col-sm-4"><img src="~/images/book1.png" /></div>
+                        <div class="col-sm-4"><img src="~/images/book2.png" /></div>
+                        <div class="col-sm-4"><img src="~/images/book3.png" /></div>
+                    </div>
+
+                    <div id="divContent" class="populateDiv"></div>
+                </div>
+
+                <div id="progress" style="display:none;text-align:center">
+                    <h2>Loading products...</h2>
+                    <img src="~/images/pleasewait.gif" alt="Loading" />
+                </div>
+                <div id="progressmarker"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(window).scroll(function () {
+        if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
+            //alert("End Of The Page");
+        }
+    });
+</script>
+
+
+
+<script type="text/javascript">
+    var sIndex = 11, offSet = 10, isPreviousEventComplete = true, isDataAvailable = true;
+
+    $(window).scroll(function () {
+        if ($(document).height() - 50 <= $(window).scrollTop() + $(window).height()) {
+            if (isPreviousEventComplete && isDataAvailable) {
+
+                isPreviousEventComplete = false;
+                $("#progress").css("display", "block");
+
+
+                $.ajax({
+                    type: "GET",
+                    url: '/Home/GetPagesContent?startIndex=' + sIndex + '&offset=' + offSet + '',
+                    success: function (Posts) {
+                        $(Posts).appendTo(".populateDiv");
+                        sIndex = sIndex + offSet;
+                        isPreviousEventComplete = true;
+                        //alert("Content from Database");
+                        if (Posts == '') //When data is not available
+                        {
+                            isDataAvailable = false;
+                            alert("CWhen data is not available");
+                        }
+                        $("#progress").css("display", "none");
+
+                    },
+                    error: function (error) {
+                        alert(error);
+                    }
+                });
+
+            }
+        }
+    });
+</script>
+
+
